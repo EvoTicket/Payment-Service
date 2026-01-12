@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.capstone.paymentservice.type.ApiResponse;
 import com.capstone.paymentservice.type.CreatePaymentLinkRequestBody;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,6 +20,7 @@ import vn.payos.model.v2.paymentRequests.PaymentLinkItem;
 import vn.payos.model.v2.paymentRequests.invoices.InvoicesInfo;
 import vn.payos.model.webhooks.ConfirmWebhookResponse;
 
+@Slf4j
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -53,6 +55,7 @@ public class OrderController {
               .build();
 
       CreatePaymentLinkResponse data = payOS.paymentRequests().create(paymentData);
+      log.info("create");
       return ApiResponse.success(data);
     } catch (Exception e) {
       e.printStackTrace();
