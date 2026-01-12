@@ -59,6 +59,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/otp/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/locations/**").permitAll()
+                        .requestMatchers("/payment/payos_transfer_handler/**").permitAll()
 
                         .anyRequest().authenticated()
                 )
