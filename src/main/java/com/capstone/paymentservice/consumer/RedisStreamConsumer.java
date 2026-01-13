@@ -32,8 +32,8 @@ public class RedisStreamConsumer implements StreamListener<String, MapRecord<Str
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final List<String> LIST_STREAM_KEY = List.of(
-            "order-creation",
-            "welcome-signup");
+            "order-creation"
+    );
     private static final String CONSUMER_GROUP = "payment-service-group";
     private static final String CONSUMER_NAME = "payment";
 

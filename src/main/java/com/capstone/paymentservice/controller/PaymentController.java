@@ -2,6 +2,7 @@ package com.capstone.paymentservice.controller;
 
 import com.capstone.paymentservice.type.ApiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.payos.PayOS;
 import vn.payos.model.webhooks.*;
+
+import java.time.OffsetDateTime;
 
 @Slf4j
 @RestController
@@ -22,15 +25,13 @@ public class PaymentController {
   }
 
   @PostMapping(path = "/payos_transfer_handler")
-  public ApiResponse<WebhookData> payosTransferHandler(@RequestBody Object body)
-      throws JsonProcessingException, IllegalArgumentException {
+  public ApiResponse<WebhookData> payosTransferHandler(@RequestBody Webhook webhook)
+      throws IllegalArgumentException {
     try {
-      WebhookData data = payOS.webhooks().verify(body);
-      System.out.println(data);
+      WebhookData data = payOS.webhooks().verify(webhook);
       log.info("webhook");
       return ApiResponse.success("Webhook delivered", data);
     } catch (Exception e) {
-      e.printStackTrace();
       return ApiResponse.error(e.getMessage());
     }
   }
