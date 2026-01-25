@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting to SePay</title>
+</head>
+<body onload="document.forms[0].submit()">
+
+<form method="POST" action="https://pay.sepay.vn/v1/checkout/init">
+    <input type="hidden" name="merchant" th:value="${merchant}">
+    <input type="hidden" name="currency" th:value="${currency}">
+    <input type="hidden" name="order_amount" th:value="${order_amount}">
+    <input type="hidden" name="operation" th:value="${operation}">
+    <input type="hidden" name="order_description" th:value="${order_description}">
+    <input type="hidden" name="order_invoice_number" th:value="${order_invoice_number}">
+    <input type="hidden" name="customer_id" th:value="${customer_id}">
+    <input type="hidden" name="success_url" th:value="${success_url}">
+    <input type="hidden" name="error_url" th:value="${error_url}">
+    <input type="hidden" name="cancel_url" th:value="${cancel_url}">
+    <input type="hidden" name="signature" th:value="${signature}">
+</form>
+
+<div class="loading-overlay">
+<div class="spinner"></div>
+<p>Đang chuyển hướng tới cổng thanh toán…</p>
+</div>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    .loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid #e0e0e0;
+        border-top: 4px solid #1976d2;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .loading-overlay p {
+        color: #555;
+        font-size: 16px;
+    }
+</style>
+
+</body>
+</html>

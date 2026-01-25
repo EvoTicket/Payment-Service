@@ -7,6 +7,13 @@ spring:
   security:
     jwt:
       secret-key: ${JWT_SECRET_KEY}
+    internal:
+      secret-key: ${INTERNAL_SERVICE_SECRET_KEY}
+      token-expiration: 3600000
+      enabled: true
+      service-name: payment-service
+      allowed-services:
+        - order-service
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -85,4 +92,12 @@ payos:
   api-key: ${PAYOS_API_KEY}
   checksum-key: ${PAYOS_CHECKSUM_KEY}
   log-level: DEBUG
+
+sepay:
+  merchant-id: ${SEPAY_MERCHANT_ID}
+  secret-key: ${SEPAY_SECRET_KEY}
+
+front-end:
+  cancel-url: ${FE_CANCEL_URL}
+  return-url: ${FE_RETURN_URL}
 

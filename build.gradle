@@ -37,6 +37,7 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'com.google.code.gson:gson:2.10.1'
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     runtimeOnly 'org.postgresql:postgresql'
 
     compileOnly 'org.projectlombok:lombok'
@@ -57,9 +58,6 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:2.6.0")
-
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("io.lettuce:lettuce-core")
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
