@@ -30,8 +30,7 @@ public class PayOSService {
     ) {
         OrderInternalResponse orderInternalResponse = orderFeignClient.getOrderDetail(orderId).getData();
 
-        String description = "Thanh toan cho đdn hang " + orderInternalResponse.getOrderCode()
-                + " voi su kien " + orderInternalResponse.getEventName();
+        String description = "Ma don hang " + orderInternalResponse.getOrderCode();
 
         List<PaymentLinkItem> items = orderInternalResponse.getItems()
                 .stream()

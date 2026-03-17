@@ -36,7 +36,7 @@ public class PayOSController {
 
     @GetMapping(path = "/{orderId}")
     public ResponseEntity<BaseResponse<PaymentLink>> getOrderById(
-            @PathVariable("orderId") long orderId
+            @PathVariable long orderId
     ) {
         PaymentLink order = payOS.paymentRequests().get(orderId);
         return ResponseEntity.ok(BaseResponse.ok("Lấy thanh toán thành công", order));
@@ -44,7 +44,7 @@ public class PayOSController {
 
     @PutMapping(path = "/{orderId}")
     public ResponseEntity<BaseResponse<PaymentLink>> cancelOrder(
-            @PathVariable("orderId") long orderId
+            @PathVariable long orderId
     ) {
         PaymentLink order = payOS.paymentRequests().cancel(orderId, "change my mind");
         return ResponseEntity.ok(BaseResponse.ok("Lấy thanh toán thành công", order));
@@ -59,15 +59,17 @@ public class PayOSController {
     }
 
     @GetMapping(path = "/{orderId}/invoices")
-    public ResponseEntity<BaseResponse<InvoicesInfo>> retrieveInvoices(@PathVariable("orderId") long orderId) {
+    public ResponseEntity<BaseResponse<InvoicesInfo>> retrieveInvoices(
+            @PathVariable long orderId
+    ) {
         InvoicesInfo invoicesInfo = payOS.paymentRequests().invoices().get(orderId);
         return ResponseEntity.ok(BaseResponse.ok("Ok", invoicesInfo));
     }
 
     @GetMapping(path = "/{orderId}/invoices/{invoiceId}/download")
     public ResponseEntity<BaseResponse<ByteArrayResource>> downloadInvoice(
-            @PathVariable("orderId") long orderId,
-            @PathVariable("invoiceId") String invoiceId
+            @PathVariable long orderId,
+            @PathVariable String invoiceId
     ) {
         FileDownloadResponse invoiceFile =
                 payOS.paymentRequests().invoices().download(invoiceId, orderId);
