@@ -21,7 +21,7 @@ public class WebhookController {
   public BaseResponse<WebhookData> payosTransferHandler(@RequestBody Webhook webhook)
           throws IllegalArgumentException {
     WebhookData data = payOS.webhooks().verify(webhook);
-    log.info("Webhook: {}", data);
+    log.info("Webhook: {}", webhook);
     return BaseResponse.ok("Webhook delivered", data);
   }
 }
