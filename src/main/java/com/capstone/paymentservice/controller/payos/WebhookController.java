@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.payos.PayOS;
 import vn.payos.model.webhooks.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @Slf4j
 @RestController
 @RequestMapping("/webhook")
@@ -29,14 +26,11 @@ public class WebhookController {
     WebhookData data = payOS.webhooks().verify(webhook);
     log.info("Webhook: {}", webhook);
     if(webhook.getSuccess()){
-      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
       PaymentSuccessEvent event = PaymentSuccessEvent.builder()
               .orderCode(data.getOrderCode())
               .description(data.getDescription())
               .amount(data.getAmount())
-              .transactionDateTime(
-                      LocalDateTime.parse(data.getTransactionDateTime(), formatter)
-              )
+              .transactionDateTime(data.getTransactionDateTime())
               .transactionId(data.getReference())
               .build();
       redisStreamProducer.sendMessage("payment-success", event);

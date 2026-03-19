@@ -1,9 +1,6 @@
 package com.capstone.paymentservice.dto.event;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -16,8 +13,7 @@ public class PaymentSuccessEvent {
 
     private String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime transactionDateTime;
+    private String transactionDateTime;
 
     private String transactionId;
 }
