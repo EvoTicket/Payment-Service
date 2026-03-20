@@ -46,7 +46,8 @@ public class SePayRestController {
         }
 
         log.info("IPN received request: {}", request);
-
+        log.info("notiType: {}", request.getNotificationType());
+        log.info("compare: {}", "ORDER_PAID".equals(request.getNotificationType()));
         if ("ORDER_PAID".equals(request.getNotificationType())) {
             String orderCode = request.getOrder().getOrderInvoiceNumber();
             PaymentSuccessEvent event = PaymentSuccessEvent.builder()
