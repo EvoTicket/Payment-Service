@@ -1,11 +1,13 @@
 package com.capstone.paymentservice.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Data
 @NoArgsConstructor
@@ -19,6 +21,7 @@ public class SePayIPNRequest {
     private CustomerDto customer;
 
     @Data
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class OrderDto {
         private String id;
         private String orderId;
@@ -33,6 +36,7 @@ public class SePayIPNRequest {
     }
 
     @Data
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class TransactionDto {
         private String id;
         private String paymentMethod;
@@ -51,6 +55,7 @@ public class SePayIPNRequest {
     }
 
     @Data
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class CustomerDto {
         private String id;
         private String customerId;
