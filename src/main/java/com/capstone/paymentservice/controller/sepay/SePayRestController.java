@@ -47,17 +47,17 @@ public class SePayRestController {
 
         log.info("IPN received request: {}", request);
 
-//        if ("ORDER_PAID".equals(request.getNotificationType())) {
-//            String orderCode = request.getOrder().getOrderInvoiceNumber();
-//            PaymentSuccessEvent event = PaymentSuccessEvent.builder()
-//                    .orderCode(Long.valueOf(orderCode))
-//                    .description(request.getOrder().getOrderDescription())
-//                    .amount(Long.valueOf(request.getOrder().getOrderAmount()))
-//                    .transactionDateTime(request.getTransaction().getTransactionDate())
-//                    .transactionId(request.getTransaction().getTransactionId())
-//                    .build();
-//            redisStreamProducer.sendMessage("payment-success", event);
-//        }
+        if ("ORDER_PAID".equals(request.getNotificationType())) {
+            String orderCode = request.getOrder().getOrderInvoiceNumber();
+            PaymentSuccessEvent event = PaymentSuccessEvent.builder()
+                    .orderCode(Long.valueOf(orderCode))
+                    .description(request.getOrder().getOrderDescription())
+                    .amount(Long.valueOf(request.getOrder().getOrderAmount()))
+                    .transactionDateTime(request.getTransaction().getTransactionDate())
+                    .transactionId(request.getTransaction().getTransactionId())
+                    .build();
+            redisStreamProducer.sendMessage("payment-success", event);
+        }
 
         return ResponseEntity.ok(Map.of("success", true));
     }
