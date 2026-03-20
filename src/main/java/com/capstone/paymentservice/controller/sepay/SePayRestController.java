@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 @Slf4j
@@ -46,14 +47,14 @@ public class SePayRestController {
         }
 
         log.info("IPN received request: {}", request);
-        log.info("notiType: {}", request.getNotificationType());
-        log.info("compare: {}", "ORDER_PAID".equals(request.getNotificationType()));
+
         if ("ORDER_PAID".equals(request.getNotificationType())) {
             String orderCode = request.getOrder().getOrderInvoiceNumber();
+            BigDecimal amount = new BigDecimal(request.getOrder().getOrderAmount());
             PaymentSuccessEvent event = PaymentSuccessEvent.builder()
                     .orderCode(Long.valueOf(orderCode))
                     .description(request.getOrder().getOrderDescription())
-                    .amount(Long.valueOf(request.getOrder().getOrderAmount()))
+                    .amount(amount)
                     .transactionDateTime(request.getTransaction().getTransactionDate())
                     .transactionId(request.getTransaction().getTransactionId())
                     .build();

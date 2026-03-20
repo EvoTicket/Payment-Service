@@ -2,6 +2,8 @@ package com.capstone.paymentservice.dto.event;
 
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -9,7 +11,7 @@ import lombok.*;
 public class PaymentSuccessEvent {
     private Long orderCode;
 
-    private Long amount;
+    private BigDecimal amount;
 
     private String description;
 
