@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/payment/sepay")
+@RequestMapping("/payment/sepay")
 @RequiredArgsConstructor
 public class SePayRestController {
     private final RedisStreamProducer redisStreamProducer;
