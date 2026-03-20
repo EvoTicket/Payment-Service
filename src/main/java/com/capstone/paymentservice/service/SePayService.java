@@ -49,9 +49,7 @@ public class SePayService {
         OrderInternalResponse orderInternalResponse =
                 orderFeignClient.getOrderDetail(orderId).getData();
 
-        String description = "Thanh toan cho don hang "
-                + orderInternalResponse.getOrderCode()
-                + " voi su kien " + orderInternalResponse.getEventName();
+        String description = "Ma don hang " + orderInternalResponse.getOrderCode();
 
         Map<String, Object> fields = new HashMap<>();
         fields.put("merchant", merchantId);
