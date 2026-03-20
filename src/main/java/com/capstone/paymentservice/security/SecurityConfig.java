@@ -61,7 +61,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/webhook/confirm").permitAll()
                         .requestMatchers("/payment/sepay").permitAll()
-                        .requestMatchers("/api/payment/sepay/webhook").permitAll()
+                        .requestMatchers("/api/payment/sepay/ipn").permitAll()
 
                         .anyRequest().authenticated()
                 )
