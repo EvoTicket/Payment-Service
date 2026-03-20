@@ -60,7 +60,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/internal/**").hasRole("INTERNAL_SERVICE")
 
                         .requestMatchers("/webhook/confirm").permitAll()
-                        .requestMatchers("/payment/sepay/init").permitAll()
+                        .requestMatchers("/payment/sepay").permitAll()
                         .requestMatchers("/payment/sepay/ipn").permitAll()
 
                         .anyRequest().authenticated()
