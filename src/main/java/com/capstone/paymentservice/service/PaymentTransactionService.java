@@ -30,7 +30,7 @@ public class PaymentTransactionService {
 
     @Transactional
     public void createPendingTransaction(
-            Long orderCode,
+            String orderCode,
             BigDecimal amount,
             PaymentMethod paymentMethod,
             String buyerName,
@@ -85,7 +85,7 @@ public class PaymentTransactionService {
      */
     @Transactional
     public boolean handlePaymentSuccess(
-            Long orderCode,
+            String orderCode,
             String transactionId,
             String transactionDateTime
     ) {
@@ -149,7 +149,7 @@ public class PaymentTransactionService {
      */
     @Transactional
     public boolean handleSePayPaymentSuccess(
-            Long orderCode,
+            String orderCode,
             String transactionId,
             String transactionDateTime
     ) {
@@ -208,7 +208,7 @@ public class PaymentTransactionService {
      * Cập nhật trạng thái CANCELLED.
      */
     @Transactional
-    public void cancelTransaction(Long orderCode) {
+    public void cancelTransaction(String orderCode) {
         paymentTransactionRepository.findByOrderCode(orderCode)
                 .ifPresent(tx -> {
                     if (tx.getStatus() == PaymentStatus.PENDING) {
@@ -223,7 +223,7 @@ public class PaymentTransactionService {
      * Lấy trạng thái payment theo orderCode.
      */
     @Transactional(readOnly = true)
-    public PaymentTransaction getByOrderCode(Long orderCode) {
+    public PaymentTransaction getByOrderCode(String orderCode) {
         return paymentTransactionRepository.findByOrderCode(orderCode)
                 .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND,
                         "Không tìm thấy giao dịch thanh toán cho mã đơn hàng " + orderCode));

@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PaymentTransactionResponse {
     private Long id;
-    private Long orderCode;
+    private String orderCode;
     private String transactionId;
     private PaymentMethod paymentMethod;
     private PaymentStatus status;

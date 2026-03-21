@@ -33,7 +33,7 @@ public class PaymentTransaction {
     private Long id;
 
     @Column(nullable = false)
-    private Long orderCode;
+    private String orderCode;
 
     @Column
     private String transactionId;

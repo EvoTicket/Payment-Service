@@ -60,7 +60,7 @@ public class PayOSService {
 
         // Lưu payment transaction với trạng thái PENDING
         paymentTransactionService.createPendingTransaction(
-                Long.valueOf(orderInternalResponse.getOrderCode()),
+                orderInternalResponse.getOrderCode(),
                 orderInternalResponse.getFinalAmount(),
                 PaymentMethod.PAYOS,
                 orderInternalResponse.getBuyerName(),

@@ -27,7 +27,7 @@ public class WebhookController {
 
     if (webhook.getSuccess()) {
       boolean isNewEvent = paymentTransactionService.handlePaymentSuccess(
-              data.getOrderCode(),
+              String.valueOf(data.getOrderCode()),
               data.getReference(),
               data.getTransactionDateTime()
       );

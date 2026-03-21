@@ -16,9 +16,9 @@ public interface PaymentTransactionRepository extends JpaRepository<PaymentTrans
 
     boolean existsByTransactionIdAndStatus(String transactionId, PaymentStatus status);
 
-    Optional<PaymentTransaction> findByOrderCode(Long orderCode);
+    Optional<PaymentTransaction> findByOrderCode(String orderCode);
 
-    List<PaymentTransaction> findByOrderCodeAndStatus(Long orderCode, PaymentStatus status);
+    List<PaymentTransaction> findByOrderCodeAndStatus(String orderCode, PaymentStatus status);
 
     List<PaymentTransaction> findByEventPublishStatusAndRetryCountLessThan(
             EventPublishStatus eventPublishStatus, int maxRetryCount

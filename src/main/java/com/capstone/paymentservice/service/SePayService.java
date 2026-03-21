@@ -73,7 +73,7 @@ public class SePayService {
         // Lưu payment transaction với trạng thái PENDING
         String redirectUrl = backendDomain + "/payment-service/payment/sepay?orderCode=" + orderCode;
         paymentTransactionService.createPendingTransaction(
-                Long.valueOf(orderInternalResponse.getOrderCode()),
+                orderInternalResponse.getOrderCode(),
                 orderInternalResponse.getFinalAmount(),
                 PaymentMethod.SEPAY,
                 orderInternalResponse.getBuyerName(),

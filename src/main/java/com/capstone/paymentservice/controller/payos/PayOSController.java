@@ -40,17 +40,17 @@ public class PayOSController {
 
     @GetMapping(path = "/{orderCode}")
     public ResponseEntity<BaseResponse<PaymentLink>> getOrderByCode(
-            @PathVariable long orderCode
+            @PathVariable String orderCode
     ) {
-        PaymentLink order = payOS.paymentRequests().get(orderCode);
+        PaymentLink order = payOS.paymentRequests().get(Long.parseLong(orderCode));
         return ResponseEntity.ok(BaseResponse.ok("Lấy thanh toán thành công", order));
     }
 
     @PutMapping(path = "/{orderCode}")
     public ResponseEntity<BaseResponse<PaymentLink>> cancelOrder(
-            @PathVariable long orderCode
+            @PathVariable String orderCode
     ) {
-        PaymentLink order = payOS.paymentRequests().cancel(orderCode, "change my mind");
+        PaymentLink order = payOS.paymentRequests().cancel(Long.parseLong(orderCode), "change my mind");
         return ResponseEntity.ok(BaseResponse.ok("Hủy thanh toán thành công", order));
     }
 
@@ -64,19 +64,19 @@ public class PayOSController {
 
     @GetMapping(path = "/{orderCode}/invoices")
     public ResponseEntity<BaseResponse<InvoicesInfo>> retrieveInvoices(
-            @PathVariable long orderCode
+            @PathVariable String orderCode
     ) {
-        InvoicesInfo invoicesInfo = payOS.paymentRequests().invoices().get(orderCode);
+        InvoicesInfo invoicesInfo = payOS.paymentRequests().invoices().get(Long.parseLong(orderCode));
         return ResponseEntity.ok(BaseResponse.ok("Ok", invoicesInfo));
     }
 
     @GetMapping(path = "/{orderCode}/invoices/{invoiceId}/download")
     public ResponseEntity<BaseResponse<ByteArrayResource>> downloadInvoice(
-            @PathVariable long orderCode,
+            @PathVariable String orderCode,
             @PathVariable String invoiceId
     ) {
         FileDownloadResponse invoiceFile =
-                payOS.paymentRequests().invoices().download(invoiceId, orderCode);
+                payOS.paymentRequests().invoices().download(invoiceId, Long.parseLong(orderCode));
 
         if (invoiceFile == null || invoiceFile.getData() == null) {
             return ResponseEntity.status(404).body(BaseResponse.badRequest("invoice not found or empty"));
@@ -92,7 +92,7 @@ public class PayOSController {
 
     @GetMapping(path = "/status")
     public ResponseEntity<BaseResponse<PaymentTransactionResponse>> getPaymentStatus(
-            @RequestParam Long orderCode
+            @RequestParam String orderCode
     ) {
         PaymentTransaction transaction = paymentTransactionService.getByOrderCode(orderCode);
         PaymentTransactionResponse response = PaymentTransactionResponse.fromEntity(transaction);
