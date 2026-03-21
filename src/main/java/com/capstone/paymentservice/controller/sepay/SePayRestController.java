@@ -53,8 +53,6 @@ public class SePayRestController {
             BigDecimal amount = new BigDecimal(request.getOrder().getOrderAmount());
             PaymentSuccessEvent event = PaymentSuccessEvent.builder()
                     .orderCode(Long.valueOf(orderCode))
-                    .description(request.getOrder().getOrderDescription())
-                    .amount(amount)
                     .transactionDateTime(request.getTransaction().getTransactionDate())
                     .transactionId(request.getTransaction().getTransactionId())
                     .build();

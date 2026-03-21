@@ -28,8 +28,6 @@ public class WebhookController {
     if(webhook.getSuccess()){
       PaymentSuccessEvent event = PaymentSuccessEvent.builder()
               .orderCode(data.getOrderCode())
-              .description(data.getDescription())
-              .amount(data.getAmount())
               .transactionDateTime(data.getTransactionDateTime())
               .transactionId(data.getReference())
               .build();
