@@ -1,7 +1,10 @@
 package com.capstone.paymentservice.controller.payos;
 
 import com.capstone.paymentservice.dto.BaseResponse;
+import com.capstone.paymentservice.dto.response.PaymentTransactionResponse;
+import com.capstone.paymentservice.entity.PaymentTransaction;
 import com.capstone.paymentservice.service.PayOSService;
+import com.capstone.paymentservice.service.PaymentTransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -25,29 +28,30 @@ import java.util.Map;
 public class PayOSController {
     private final PayOS payOS;
     private final PayOSService payOSService;
+    private final PaymentTransactionService paymentTransactionService;
 
     @PostMapping(path = "/create")
     public ResponseEntity<BaseResponse<CreatePaymentLinkResponse>> createPaymentLink(
-            @RequestParam Long orderId
+            @RequestParam String orderCode
     ) {
-        CreatePaymentLinkResponse response = payOSService.createPaymentLink(orderId);
+        CreatePaymentLinkResponse response = payOSService.createPaymentLink(orderCode);
         return ResponseEntity.ok(BaseResponse.created("Tạo thanh toán", response));
     }
 
-    @GetMapping(path = "/{orderId}")
-    public ResponseEntity<BaseResponse<PaymentLink>> getOrderById(
-            @PathVariable long orderId
+    @GetMapping(path = "/{orderCode}")
+    public ResponseEntity<BaseResponse<PaymentLink>> getOrderByCode(
+            @PathVariable long orderCode
     ) {
-        PaymentLink order = payOS.paymentRequests().get(orderId);
+        PaymentLink order = payOS.paymentRequests().get(orderCode);
         return ResponseEntity.ok(BaseResponse.ok("Lấy thanh toán thành công", order));
     }
 
-    @PutMapping(path = "/{orderId}")
+    @PutMapping(path = "/{orderCode}")
     public ResponseEntity<BaseResponse<PaymentLink>> cancelOrder(
-            @PathVariable long orderId
+            @PathVariable long orderCode
     ) {
-        PaymentLink order = payOS.paymentRequests().cancel(orderId, "change my mind");
-        return ResponseEntity.ok(BaseResponse.ok("Lấy thanh toán thành công", order));
+        PaymentLink order = payOS.paymentRequests().cancel(orderCode, "change my mind");
+        return ResponseEntity.ok(BaseResponse.ok("Hủy thanh toán thành công", order));
     }
 
     @PostMapping(path = "/confirm-webhook")
@@ -58,21 +62,21 @@ public class PayOSController {
         return ResponseEntity.ok(BaseResponse.ok("Ok", result));
     }
 
-    @GetMapping(path = "/{orderId}/invoices")
+    @GetMapping(path = "/{orderCode}/invoices")
     public ResponseEntity<BaseResponse<InvoicesInfo>> retrieveInvoices(
-            @PathVariable long orderId
+            @PathVariable long orderCode
     ) {
-        InvoicesInfo invoicesInfo = payOS.paymentRequests().invoices().get(orderId);
+        InvoicesInfo invoicesInfo = payOS.paymentRequests().invoices().get(orderCode);
         return ResponseEntity.ok(BaseResponse.ok("Ok", invoicesInfo));
     }
 
-    @GetMapping(path = "/{orderId}/invoices/{invoiceId}/download")
+    @GetMapping(path = "/{orderCode}/invoices/{invoiceId}/download")
     public ResponseEntity<BaseResponse<ByteArrayResource>> downloadInvoice(
-            @PathVariable long orderId,
+            @PathVariable long orderCode,
             @PathVariable String invoiceId
     ) {
         FileDownloadResponse invoiceFile =
-                payOS.paymentRequests().invoices().download(invoiceId, orderId);
+                payOS.paymentRequests().invoices().download(invoiceId, orderCode);
 
         if (invoiceFile == null || invoiceFile.getData() == null) {
             return ResponseEntity.status(404).body(BaseResponse.badRequest("invoice not found or empty"));
@@ -84,6 +88,15 @@ public class PayOSController {
 
         return ResponseEntity.ok().headers(headers)
                 .body(BaseResponse.ok("ok", resource));
+    }
+
+    @GetMapping(path = "/status")
+    public ResponseEntity<BaseResponse<PaymentTransactionResponse>> getPaymentStatus(
+            @RequestParam Long orderCode
+    ) {
+        PaymentTransaction transaction = paymentTransactionService.getByOrderCode(orderCode);
+        PaymentTransactionResponse response = PaymentTransactionResponse.fromEntity(transaction);
+        return ResponseEntity.ok(BaseResponse.ok("Lấy trạng thái thanh toán thành công", response));
     }
 
     private HttpHeaders buildInvoiceHeaders(FileDownloadResponse invoiceFile) {

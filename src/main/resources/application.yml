@@ -101,3 +101,12 @@ front-end:
   cancel-url: ${FE_CANCEL_URL}
   return-url: ${FE_RETURN_URL}
 
+back-end:
+  domain: https://api-evoticket.io.vn
+
+# Payment retry configuration
+payment:
+  retry:
+    max-count: 5
+    interval-ms: 60000
+

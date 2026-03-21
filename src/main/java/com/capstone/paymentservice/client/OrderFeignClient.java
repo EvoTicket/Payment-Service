@@ -13,5 +13,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 )
 public interface OrderFeignClient {
     @GetMapping("/orders/detail")
-    BaseResponse<OrderInternalResponse> getOrderDetail(@RequestParam("orderId") Long orderId);
+    BaseResponse<OrderInternalResponse> getOrderDetail(@RequestParam("orderCode") String orderCode);
 }

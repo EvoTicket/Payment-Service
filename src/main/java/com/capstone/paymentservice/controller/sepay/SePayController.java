@@ -18,10 +18,10 @@ public class SePayController {
 
     @GetMapping
     public String payment(
-            @RequestParam Long orderId,
+            @RequestParam String orderCode,
             Model model
     ) {
-        Map<String, Object> fields = sePayService.createPaymentFields(orderId);
+        Map<String, Object> fields = sePayService.createPaymentFields(orderCode);
 
         model.addAllAttributes(fields);
 

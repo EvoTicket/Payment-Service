@@ -2,7 +2,9 @@ package com.capstone.paymentservice.service;
 
 import com.capstone.paymentservice.client.OrderFeignClient;
 import com.capstone.paymentservice.client.OrderInternalResponse;
+import com.capstone.paymentservice.enums.PaymentMethod;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
@@ -12,11 +14,13 @@ import vn.payos.model.v2.paymentRequests.PaymentLinkItem;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PayOSService {
     private final PayOS payOS;
     private final OrderFeignClient orderFeignClient;
+    private final PaymentTransactionService paymentTransactionService;
 
     @Value("${front-end.cancel-url}")
     private String cancelUrl;
@@ -25,10 +29,8 @@ public class PayOSService {
     private String returnUrl;
 
 
-    public CreatePaymentLinkResponse createPaymentLink(
-            Long orderId
-    ) {
-        OrderInternalResponse orderInternalResponse = orderFeignClient.getOrderDetail(orderId).getData();
+    public CreatePaymentLinkResponse createPaymentLink(String orderCode) {
+        OrderInternalResponse orderInternalResponse = orderFeignClient.getOrderDetail(orderCode).getData();
 
         String description = "Ma don hang " + orderInternalResponse.getOrderCode();
 
@@ -53,6 +55,21 @@ public class PayOSService {
                 .returnUrl(returnUrl)
                 .cancelUrl(cancelUrl)
                 .build();
-        return payOS.paymentRequests().create(paymentData);
+
+        CreatePaymentLinkResponse response = payOS.paymentRequests().create(paymentData);
+
+        // Lưu payment transaction với trạng thái PENDING
+        paymentTransactionService.createPendingTransaction(
+                Long.valueOf(orderInternalResponse.getOrderCode()),
+                orderInternalResponse.getFinalAmount(),
+                PaymentMethod.PAYOS,
+                orderInternalResponse.getBuyerName(),
+                orderInternalResponse.getBuyerEmail(),
+                orderInternalResponse.getBuyerPhone(),
+                description,
+                response.getCheckoutUrl()
+        );
+
+        return response;
     }
 }

@@ -1,8 +1,7 @@
 package com.capstone.paymentservice.controller.payos;
 
 import com.capstone.paymentservice.dto.BaseResponse;
-import com.capstone.paymentservice.dto.event.PaymentSuccessEvent;
-import com.capstone.paymentservice.producer.RedisStreamProducer;
+import com.capstone.paymentservice.service.PaymentTransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,21 +17,26 @@ import vn.payos.model.webhooks.*;
 @RequiredArgsConstructor
 public class WebhookController {
   private final PayOS payOS;
-  private final RedisStreamProducer redisStreamProducer;
+  private final PaymentTransactionService paymentTransactionService;
 
   @PostMapping(path = "/confirm")
   public BaseResponse<WebhookData> payosTransferHandler(@RequestBody Webhook webhook)
           throws IllegalArgumentException {
     WebhookData data = payOS.webhooks().verify(webhook);
-    log.info("Webhook: {}", webhook);
-    if(webhook.getSuccess()){
-      PaymentSuccessEvent event = PaymentSuccessEvent.builder()
-              .orderCode(data.getOrderCode())
-              .transactionDateTime(data.getTransactionDateTime())
-              .transactionId(data.getReference())
-              .build();
-      redisStreamProducer.sendMessage("payment-success", event);
+    log.info("PayOS webhook received: orderCode={}, success={}", data.getOrderCode(), webhook.getSuccess());
+
+    if (webhook.getSuccess()) {
+      boolean isNewEvent = paymentTransactionService.handlePaymentSuccess(
+              data.getOrderCode(),
+              data.getReference(),
+              data.getTransactionDateTime()
+      );
+
+      if (!isNewEvent) {
+        log.info("Duplicate PayOS webhook for orderCode={}, already processed", data.getOrderCode());
+      }
     }
+
     return BaseResponse.ok("Webhook delivered", data);
   }
 }

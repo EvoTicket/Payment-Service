@@ -21,6 +21,7 @@ public enum ErrorCode {
     DATA_INTEGRITY_VIOLATION("DATA_INTEGRITY_VIOLATION", "Vi phạm ràng buộc dữ liệu.", HttpStatus.CONFLICT),
     FILE_UPLOAD_ERROR("FILE_UPLOAD_ERROR", "Lỗi khi upload tệp.", HttpStatus.BAD_REQUEST),
     BAD_JSON("BAD_JSON", "Dữ liệu đầu vào không hợp lệ hoặc không đọc được JSON.", HttpStatus.BAD_REQUEST),
+    PAYMENT_ALREADY_PROCESSED("PAYMENT_ALREADY_PROCESSED", "Giao dịch thanh toán đã được xử lý trước đó.", HttpStatus.CONFLICT),
     ;
 
 

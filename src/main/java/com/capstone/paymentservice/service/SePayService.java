@@ -2,6 +2,7 @@ package com.capstone.paymentservice.service;
 
 import com.capstone.paymentservice.client.OrderFeignClient;
 import com.capstone.paymentservice.client.OrderInternalResponse;
+import com.capstone.paymentservice.enums.PaymentMethod;
 import com.capstone.paymentservice.exception.AppException;
 import com.capstone.paymentservice.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,11 @@ public class SePayService {
     @Value("${front-end.return-url}")
     private String returnUrl;
 
+    @Value("${back-end.domain}")
+    private String backendDomain;
+
     private final OrderFeignClient orderFeignClient;
+    private final PaymentTransactionService paymentTransactionService;
 
     private static final List<String> SIGNED_FIELDS = List.of(
             "merchant",
@@ -45,9 +50,9 @@ public class SePayService {
             "cancel_url"
     );
 
-    public Map<String, Object> createPaymentFields(Long orderId) {
+    public Map<String, Object> createPaymentFields(String orderCode) {
         OrderInternalResponse orderInternalResponse =
-                orderFeignClient.getOrderDetail(orderId).getData();
+                orderFeignClient.getOrderDetail(orderCode).getData();
 
         String description = "Ma don hang " + orderInternalResponse.getOrderCode();
 
@@ -64,6 +69,19 @@ public class SePayService {
         fields.put("cancel_url", cancelUrl);
 
         fields.put("signature", signFields(fields));
+
+        // Lưu payment transaction với trạng thái PENDING
+        String redirectUrl = backendDomain + "/payment-service/payment/sepay?orderCode=" + orderCode;
+        paymentTransactionService.createPendingTransaction(
+                Long.valueOf(orderInternalResponse.getOrderCode()),
+                orderInternalResponse.getFinalAmount(),
+                PaymentMethod.SEPAY,
+                orderInternalResponse.getBuyerName(),
+                orderInternalResponse.getBuyerEmail(),
+                orderInternalResponse.getBuyerPhone(),
+                description,
+                redirectUrl
+        );
 
         return fields;
     }
