@@ -3,7 +3,6 @@ package com.capstone.paymentservice.controller.payos;
 import com.capstone.paymentservice.dto.BaseResponse;
 import com.capstone.paymentservice.dto.response.PaymentTransactionResponse;
 import com.capstone.paymentservice.entity.PaymentTransaction;
-import com.capstone.paymentservice.service.PayOSService;
 import com.capstone.paymentservice.service.PaymentTransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.payos.PayOS;
 import vn.payos.core.FileDownloadResponse;
-import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
 import vn.payos.model.v2.paymentRequests.PaymentLink;
 import vn.payos.model.v2.paymentRequests.invoices.InvoicesInfo;
 import vn.payos.model.webhooks.ConfirmWebhookResponse;
@@ -27,16 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PayOSController {
     private final PayOS payOS;
-    private final PayOSService payOSService;
     private final PaymentTransactionService paymentTransactionService;
-
-    @PostMapping(path = "/create")
-    public ResponseEntity<BaseResponse<CreatePaymentLinkResponse>> createPaymentLink(
-            @RequestParam String orderCode
-    ) {
-        CreatePaymentLinkResponse response = payOSService.createPaymentLink(orderCode);
-        return ResponseEntity.ok(BaseResponse.created("Tạo thanh toán", response));
-    }
 
     @GetMapping(path = "/{orderCode}")
     public ResponseEntity<BaseResponse<PaymentLink>> getOrderByCode(

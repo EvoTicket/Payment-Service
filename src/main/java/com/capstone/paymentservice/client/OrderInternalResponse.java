@@ -1,5 +1,6 @@
 package com.capstone.paymentservice.client;
 
+import com.capstone.paymentservice.enums.PaymentMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderInternalResponse {
     private Long id;
+    private PaymentMethod paymentMethod;
     private String orderCode;
     private String eventName;
     private String buyerName;

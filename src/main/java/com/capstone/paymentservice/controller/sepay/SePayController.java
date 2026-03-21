@@ -1,7 +1,6 @@
 package com.capstone.paymentservice.controller.sepay;
 
-import com.capstone.paymentservice.service.PaymentTokenService;
-import com.capstone.paymentservice.service.SePayService;
+import com.capstone.paymentservice.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -17,28 +16,15 @@ import java.util.Map;
 @RequestMapping("/payment/sepay")
 @RequiredArgsConstructor
 public class SePayController {
-    private final SePayService sePayService;
-    private final PaymentTokenService paymentTokenService;
+    private final PaymentService paymentService;
 
-    /**
-     * Nhận token từ query param, validate và consume (one-time use).
-     * Nếu token hợp lệ -> lấy orderCode từ Redis -> tạo form SePay -> auto-submit redirect.
-     * Nếu token không hợp lệ hoặc hết hạn -> trả lỗi.
-     */
     @GetMapping
     public String payment(
-            @RequestParam String token,
+            @RequestParam String orderCode,
             Model model
     ) {
-        String orderCode = paymentTokenService.validateAndConsumeToken(token);
 
-        if (orderCode == null) {
-            log.warn("Invalid or expired payment token: {}", token);
-            model.addAttribute("errorMessage", "Link thanh toán không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.");
-            return "sepay-error";
-        }
-
-        Map<String, Object> fields = sePayService.createPaymentFields(orderCode);
+        Map<String, Object> fields = paymentService.createPaymentFields(orderCode);
         model.addAllAttributes(fields);
 
         return "sepay-form";
