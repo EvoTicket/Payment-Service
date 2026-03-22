@@ -78,4 +78,12 @@ public class WebhookController {
 
         return ResponseEntity.ok(Map.of("success", true));
     }
+
+    @PostMapping(path = "/confirm-webhook")
+    public ResponseEntity<BaseResponse<ConfirmWebhookResponse>> confirmWebhook(
+            @RequestBody Map<String, String> requestBody
+    ) {
+        ConfirmWebhookResponse result = payOS.webhooks().confirm(requestBody.get("webhookUrl"));
+        return ResponseEntity.ok(BaseResponse.ok("Ok", result));
+    }
 }
