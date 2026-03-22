@@ -1,6 +1,7 @@
-package com.capstone.paymentservice.controller.sepay;
+package com.capstone.paymentservice.controller;
 
 import com.capstone.paymentservice.service.PaymentService;
+import com.capstone.paymentservice.service.strategy.PaymentResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -8,8 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -23,9 +22,8 @@ public class SePayController {
             @RequestParam String orderCode,
             Model model
     ) {
-
-        Map<String, Object> fields = paymentService.createPaymentFields(orderCode);
-        model.addAllAttributes(fields);
+        PaymentResult result = paymentService.createSePayPayment(orderCode);
+        model.addAllAttributes(result.getFormFields());
 
         return "sepay-form";
     }

@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PaymentLink {
+public class PaymentLinkResponse {
     String redirectUrl;
 }

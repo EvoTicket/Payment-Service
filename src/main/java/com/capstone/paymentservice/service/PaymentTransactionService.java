@@ -77,21 +77,24 @@ public class PaymentTransactionService {
     }
 
     /**
-     * Xử lý payment success từ webhook PayOS.
+     * Xử lý payment success từ webhook/IPN (dùng chung cho mọi payment method).
      * Thực hiện idempotency check: nếu transaction đã được xử lý (SUCCESS), skip.
      * Cập nhật trạng thái và publish event tới Redis.
      *
+     * @param paymentMethod phương thức thanh toán (dùng khi cần tạo record mới từ webhook)
      * @return true nếu đây là lần xử lý đầu tiên, false nếu đã xử lý trước đó (duplicate)
      */
     @Transactional
     public boolean handlePaymentSuccess(
             String orderCode,
             String transactionId,
-            String transactionDateTime
+            String transactionDateTime,
+            PaymentMethod paymentMethod
     ) {
         // Idempotency check: đã có transaction SUCCESS với transactionId này chưa?
         if (transactionId != null && paymentTransactionRepository.existsByTransactionIdAndStatus(transactionId, PaymentStatus.SUCCESS)) {
-            log.warn("Duplicate webhook detected: transactionId={} already processed as SUCCESS. Skipping.", transactionId);
+            log.warn("[{}] Duplicate webhook detected: transactionId={} already processed as SUCCESS. Skipping.",
+                    paymentMethod, transactionId);
             return false;
         }
 
@@ -102,16 +105,18 @@ public class PaymentTransactionService {
         if (optionalTx.isPresent()) {
             transaction = optionalTx.get();
             if (transaction.getStatus() == PaymentStatus.SUCCESS) {
-                log.warn("Duplicate webhook detected: orderCode={} already SUCCESS. Skipping.", orderCode);
+                log.warn("[{}] Duplicate webhook detected: orderCode={} already SUCCESS. Skipping.",
+                        paymentMethod, orderCode);
                 return false;
             }
         } else {
             // Webhook đến trước khi có record PENDING (edge case)
-            log.warn("No PENDING transaction found for orderCode={}. Creating record from webhook data.", orderCode);
+            log.warn("[{}] No PENDING transaction found for orderCode={}. Creating record from webhook data.",
+                    paymentMethod, orderCode);
             transaction = PaymentTransaction.builder()
                     .orderCode(orderCode)
                     .amount(BigDecimal.ZERO)
-                    .paymentMethod(PaymentMethod.PAYOS)
+                    .paymentMethod(paymentMethod)
                     .status(PaymentStatus.PENDING)
                     .eventPublishStatus(EventPublishStatus.NOT_PUBLISHED)
                     .retryCount(0)
@@ -133,71 +138,13 @@ public class PaymentTransactionService {
         try {
             redisStreamProducer.sendMessage(PAYMENT_SUCCESS_STREAM, event);
             transaction.setEventPublishStatus(EventPublishStatus.PUBLISHED);
-            log.info("Payment success event published for orderCode={}, transactionId={}", orderCode, transactionId);
+            log.info("[{}] Payment success event published for orderCode={}, transactionId={}",
+                    paymentMethod, orderCode, transactionId);
         } catch (Exception e) {
             transaction.setEventPublishStatus(EventPublishStatus.FAILED);
             transaction.setFailureReason("Redis publish failed: " + e.getMessage());
-            log.error("Failed to publish payment success event for orderCode={}. Will retry later.", orderCode, e);
-        }
-
-        paymentTransactionRepository.save(transaction);
-        return true;
-    }
-
-    /**
-     * Xử lý SePay payment success (tương tự PayOS nhưng set PaymentMethod = SEPAY).
-     */
-    @Transactional
-    public boolean handleSePayPaymentSuccess(
-            String orderCode,
-            String transactionId,
-            String transactionDateTime
-    ) {
-        // Idempotency check
-        if (transactionId != null && paymentTransactionRepository.existsByTransactionIdAndStatus(transactionId, PaymentStatus.SUCCESS)) {
-            log.warn("Duplicate SePay IPN detected: transactionId={} already processed as SUCCESS. Skipping.", transactionId);
-            return false;
-        }
-
-        Optional<PaymentTransaction> optionalTx = paymentTransactionRepository.findByOrderCode(orderCode);
-
-        PaymentTransaction transaction;
-        if (optionalTx.isPresent()) {
-            transaction = optionalTx.get();
-            if (transaction.getStatus() == PaymentStatus.SUCCESS) {
-                log.warn("Duplicate SePay IPN detected: orderCode={} already SUCCESS. Skipping.", orderCode);
-                return false;
-            }
-        } else {
-            log.warn("No PENDING transaction found for SePay orderCode={}. Creating record from IPN data.", orderCode);
-            transaction = PaymentTransaction.builder()
-                    .orderCode(orderCode)
-                    .amount(BigDecimal.ZERO)
-                    .paymentMethod(PaymentMethod.SEPAY)
-                    .status(PaymentStatus.PENDING)
-                    .eventPublishStatus(EventPublishStatus.NOT_PUBLISHED)
-                    .retryCount(0)
-                    .build();
-        }
-
-        transaction.setStatus(PaymentStatus.SUCCESS);
-        transaction.setTransactionId(transactionId);
-        transaction.setTransactionDateTime(transactionDateTime);
-
-        PaymentSuccessEvent event = PaymentSuccessEvent.builder()
-                .orderCode(orderCode)
-                .transactionDateTime(transactionDateTime)
-                .transactionId(transactionId)
-                .build();
-
-        try {
-            redisStreamProducer.sendMessage(PAYMENT_SUCCESS_STREAM, event);
-            transaction.setEventPublishStatus(EventPublishStatus.PUBLISHED);
-            log.info("SePay payment success event published for orderCode={}, transactionId={}", orderCode, transactionId);
-        } catch (Exception e) {
-            transaction.setEventPublishStatus(EventPublishStatus.FAILED);
-            transaction.setFailureReason("Redis publish failed: " + e.getMessage());
-            log.error("Failed to publish SePay payment success event for orderCode={}. Will retry later.", orderCode, e);
+            log.error("[{}] Failed to publish payment success event for orderCode={}. Will retry later.",
+                    paymentMethod, orderCode, e);
         }
 
         paymentTransactionRepository.save(transaction);
@@ -208,25 +155,18 @@ public class PaymentTransactionService {
      * Cập nhật trạng thái CANCELLED.
      */
     @Transactional
-    public void cancelTransaction(String orderCode) {
-        paymentTransactionRepository.findByOrderCode(orderCode)
-                .ifPresent(tx -> {
+    public boolean cancelTransaction(String orderCode) {
+        return paymentTransactionRepository.findByOrderCode(orderCode)
+                .map(tx -> {
                     if (tx.getStatus() == PaymentStatus.PENDING) {
                         tx.setStatus(PaymentStatus.CANCELLED);
                         paymentTransactionRepository.save(tx);
                         log.info("Payment transaction cancelled for orderCode={}", orderCode);
+                        return true;
                     }
-                });
-    }
-
-    /**
-     * Lấy trạng thái payment theo orderCode.
-     */
-    @Transactional(readOnly = true)
-    public PaymentTransaction getByOrderCode(String orderCode) {
-        return paymentTransactionRepository.findByOrderCode(orderCode)
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND,
-                        "Không tìm thấy giao dịch thanh toán cho mã đơn hàng " + orderCode));
+                    return false;
+                })
+                .orElse(false);
     }
 
     /**
