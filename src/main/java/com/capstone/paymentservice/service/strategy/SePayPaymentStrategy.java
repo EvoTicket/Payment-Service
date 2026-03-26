@@ -70,7 +70,7 @@ public class SePayPaymentStrategy implements PaymentStrategy {
         fields.put("customer_id", order.getBuyerName());
         fields.put("success_url", returnUrl);
         fields.put("error_url", returnUrl);
-        fields.put("cancel_url", cancelUrl);
+        fields.put("cancel_url", cancelUrl + "?orderCode=" + order.getOrderCode());
 
         fields.put("signature", signFields(fields));
 
