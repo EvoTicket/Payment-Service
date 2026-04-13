@@ -1,6 +1,7 @@
 package com.capstone.paymentservice.service;
 
 import com.capstone.paymentservice.dto.event.PaymentSuccessEvent;
+import com.capstone.paymentservice.dto.response.PaymentTransactionResponse;
 import com.capstone.paymentservice.entity.PaymentTransaction;
 import com.capstone.paymentservice.enums.EventPublishStatus;
 import com.capstone.paymentservice.enums.PaymentMethod;
@@ -27,6 +28,13 @@ public class PaymentTransactionService {
     private final RedisStreamProducer redisStreamProducer;
 
     private static final String PAYMENT_SUCCESS_STREAM = "payment-success";
+
+
+    public PaymentTransactionResponse getTransactionByOrderCode(String orderCode) {
+        return paymentTransactionRepository.findByOrderCode(orderCode)
+                .map(PaymentTransactionResponse::fromEntity)
+                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Không tìm thấy giao dịch cho mã đơn hàng: " + orderCode));
+    }
 
     @Transactional
     public void createPendingTransaction(

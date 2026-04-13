@@ -17,7 +17,6 @@ public class OrderInternalResponse {
     private Long id;
     private PaymentMethod paymentMethod;
     private String orderCode;
-    private String eventName;
     private String buyerName;
     private String buyerPhone;
     private String buyerEmail;
