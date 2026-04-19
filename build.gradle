@@ -3,6 +3,14 @@ plugins {
     id 'org.springframework.boot' version '3.3.1'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.jetbrains.kotlin.jvm'
+    id "org.sonarqube" version "7.2.3.7755"
+}
+
+sonar {
+    properties {
+        property "sonar.projectKey", "EvoTicket_Payment-Service_5b5e0d3e-be9c-4fef-8462-a8f453d6d566"
+        property "sonar.projectName", "Payment-Service"
+    }
 }
 
 group = 'com.capstone'
