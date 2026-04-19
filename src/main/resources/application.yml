@@ -95,6 +95,8 @@ logging:
         SQL: debug
         type:
           descriptor: trace
+  pattern:
+    level: "%5p [traceId=%X{traceId}, spanId=%X{spanId}]"
 
 payos:
   client-id: ${PAYOS_CLIENT_ID}
