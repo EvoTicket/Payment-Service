@@ -1,6 +1,7 @@
 package com.capstone.paymentservice.client;
 
 import com.capstone.paymentservice.dto.BaseResponse;
+import com.capstone.paymentservice.dto.response.PaymentLinkResponse;
 import com.capstone.paymentservice.dto.response.PaymentTransactionResponse;
 import com.capstone.paymentservice.service.PaymentService;
 import com.capstone.paymentservice.service.PaymentTransactionService;
@@ -27,5 +28,12 @@ public class InternalController {
             @PathVariable String orderCode
     ) {
         return ResponseEntity.ok(BaseResponse.ok("Lấy trạng thái thanh toán thành công", paymentTransactionService.getTransactionByOrderCode(orderCode)));
+    }
+
+    @PostMapping(path = "/payment/create/{orderCode}")
+    public ResponseEntity<BaseResponse<PaymentLinkResponse>> createPaymentLink(
+            @PathVariable String orderCode
+    ) {
+        return ResponseEntity.ok(BaseResponse.created("Tạo thanh toán thành công", paymentService.getPaymentLink(orderCode)));
     }
 }

@@ -33,7 +33,7 @@ public class WebhookController {
         WebhookData data = payOS.webhooks().verify(webhook);
         log.info("PayOS webhook received: orderCode={}, success={}", data.getOrderCode(), webhook.getSuccess());
 
-        if (webhook.getSuccess()) {
+        if (Boolean.TRUE.equals(webhook.getSuccess())) {
             boolean isNewEvent = paymentTransactionService.handlePaymentSuccess(
                     String.valueOf(data.getOrderCode()),
                     data.getReference(),
