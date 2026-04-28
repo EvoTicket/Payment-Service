@@ -41,7 +41,7 @@ public class PayOSPaymentStrategy implements PaymentStrategy {
                 .stream()
                 .map(item -> PaymentLinkItem.builder()
                         .name(item.getTicketTypeName())
-                        .quantity(item.getQuantity())
+                        .quantity(item.getQuantity() != null ? item.getQuantity().intValue() : 1)
                         .price(item.getUnitPrice().longValue())
                         .build()
                 )

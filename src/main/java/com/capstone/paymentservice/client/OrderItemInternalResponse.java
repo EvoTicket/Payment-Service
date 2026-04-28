@@ -16,8 +16,10 @@ public class OrderItemInternalResponse {
     private Long id;
     private Long ticketTypeId;
     private String ticketTypeName;
-    private Integer quantity;
+    private Long quantity;
     private BigDecimal unitPrice;
     private BigDecimal subtotal;
+    private String ticketCode;
+    private String tokenId;
     private LocalDateTime createdAt;
 }
