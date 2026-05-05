@@ -53,9 +53,8 @@ public class PaymentService {
         }
     }
 
-    public PaymentLinkResponse getPaymentLink(String orderCode) {
-        OrderInternalResponse order = orderFeignClient.getOrderDetail(orderCode).getData();
-        PaymentMethod method = order.getPaymentMethod();
+    public PaymentLinkResponse getPaymentLink(OrderInternalResponse request) {
+        PaymentMethod method = request.getPaymentMethod();
 
         PaymentStrategy strategy = strategyMap.get(method);
         if (strategy == null) {
@@ -63,12 +62,12 @@ public class PaymentService {
                     "Không hỗ trợ phương thức thanh toán: " + method);
         }
 
-        PaymentResult result = strategy.createPayment(order);
+        PaymentResult result = strategy.createPayment(request);
 
         String redirectUrl;
         if (result.isFormBased()) {
             // SePay: redirect tới page render form auto-submit
-            redirectUrl = backendDomain + "/payment-service/payment/sepay?orderCode=" + orderCode;
+            redirectUrl = backendDomain + "/payment-service/payment/sepay?orderCode=" + request.getOrderCode();
         } else {
             redirectUrl = result.getRedirectUrl();
         }

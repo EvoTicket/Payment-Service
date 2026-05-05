@@ -109,11 +109,10 @@ sepay:
   secret-key: ${SEPAY_SECRET_KEY}
 
 front-end:
-  cancel-url: ${FE_CANCEL_URL}
-  return-url: ${FE_RETURN_URL}
+  domain: ${FE_DOMAIN}
 
 back-end:
-  domain: https://api-evoticket.io.vn
+  domain: ${BE_DOMAIN}
 
 # Payment retry configuration
 payment:

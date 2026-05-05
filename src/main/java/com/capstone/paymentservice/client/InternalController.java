@@ -32,8 +32,8 @@ public class InternalController {
 
     @PostMapping(path = "/payment/create/{orderCode}")
     public ResponseEntity<BaseResponse<PaymentLinkResponse>> createPaymentLink(
-            @PathVariable String orderCode
+            @RequestBody OrderInternalResponse request
     ) {
-        return ResponseEntity.ok(BaseResponse.created("Tạo thanh toán thành công", paymentService.getPaymentLink(orderCode)));
+        return ResponseEntity.ok(BaseResponse.created("Tạo thanh toán thành công", paymentService.getPaymentLink(request)));
     }
 }

@@ -28,11 +28,8 @@ public class SePayPaymentStrategy implements PaymentStrategy {
     @Value("${sepay.merchant-id}")
     private String sePayMerchantId;
 
-    @Value("${front-end.cancel-url}")
-    private String cancelUrl;
-
-    @Value("${front-end.return-url}")
-    private String returnUrl;
+    @Value("${front-end.domain}")
+    private String frontendDomain;
 
     @Value("${back-end.domain}")
     private String backendDomain;
@@ -68,9 +65,9 @@ public class SePayPaymentStrategy implements PaymentStrategy {
         fields.put("order_description", description);
         fields.put("order_invoice_number", order.getOrderCode());
         fields.put("customer_id", order.getBuyerName());
-        fields.put("success_url", returnUrl);
-        fields.put("error_url", returnUrl);
-        fields.put("cancel_url", cancelUrl + "?orderCode=" + order.getOrderCode());
+        fields.put("success_url", frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=success");
+        fields.put("error_url", frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=failed");
+        fields.put("cancel_url", frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=cancelled");
 
         fields.put("signature", signFields(fields));
 

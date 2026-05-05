@@ -22,11 +22,8 @@ public class PayOSPaymentStrategy implements PaymentStrategy {
     private final PayOS payOS;
     private final PaymentTransactionService paymentTransactionService;
 
-    @Value("${front-end.cancel-url}")
-    private String cancelUrl;
-
-    @Value("${front-end.return-url}")
-    private String returnUrl;
+    @Value("${front-end.domain}")
+    private String frontendDomain;
 
     @Override
     public PaymentMethod getPaymentMethod() {
@@ -55,8 +52,8 @@ public class PayOSPaymentStrategy implements PaymentStrategy {
                 .buyerName(order.getBuyerName())
                 .buyerEmail(order.getBuyerEmail())
                 .buyerPhone(order.getBuyerPhone())
-                .returnUrl(returnUrl)
-                .cancelUrl(cancelUrl)
+                .returnUrl(frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=success")
+                .cancelUrl(frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=cancelled")
                 .build();
 
         CreatePaymentLinkResponse response = payOS.paymentRequests().create(paymentData);

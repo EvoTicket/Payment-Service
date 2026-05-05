@@ -14,12 +14,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderInternalResponse {
-    private Long id;
     private PaymentMethod paymentMethod;
     private String orderCode;
     private String buyerName;
     private String buyerPhone;
     private String buyerEmail;
+    private Long eventId;
+    private String locale;
     private BigDecimal finalAmount;
     private List<OrderItemInternalResponse> items;
 }
