@@ -52,8 +52,8 @@ public class PayOSPaymentStrategy implements PaymentStrategy {
                 .buyerName(order.getBuyerName())
                 .buyerEmail(order.getBuyerEmail())
                 .buyerPhone(order.getBuyerPhone())
-                .returnUrl(frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=success")
-                .cancelUrl(frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=cancelled")
+                .returnUrl(frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result")
+                .cancelUrl(frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result")
                 .build();
 
         CreatePaymentLinkResponse response = payOS.paymentRequests().create(paymentData);
