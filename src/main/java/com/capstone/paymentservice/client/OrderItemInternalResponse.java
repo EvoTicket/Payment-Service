@@ -14,5 +14,5 @@ import java.math.BigDecimal;
 public class OrderItemInternalResponse {
     private String ticketTypeName;
     private Long quantity;
-    private BigDecimal unitPrice;
+    private BigDecimal subTotal;
 }

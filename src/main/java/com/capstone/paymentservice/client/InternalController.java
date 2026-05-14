@@ -30,7 +30,7 @@ public class InternalController {
         return ResponseEntity.ok(BaseResponse.ok("Lấy trạng thái thanh toán thành công", paymentTransactionService.getTransactionByOrderCode(orderCode)));
     }
 
-    @PostMapping(path = "/payment/create/{orderCode}")
+    @PostMapping(path = "/payment/create")
     public ResponseEntity<BaseResponse<PaymentLinkResponse>> createPaymentLink(
             @RequestBody OrderInternalResponse request
     ) {

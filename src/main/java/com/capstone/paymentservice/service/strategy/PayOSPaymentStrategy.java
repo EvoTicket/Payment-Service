@@ -13,6 +13,7 @@ import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
 import vn.payos.model.v2.paymentRequests.PaymentLinkItem;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -52,8 +53,8 @@ public class PayOSPaymentStrategy implements PaymentStrategy {
                 .buyerName(order.getBuyerName())
                 .buyerEmail(order.getBuyerEmail())
                 .buyerPhone(order.getBuyerPhone())
-                .returnUrl(frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result")
-                .cancelUrl(frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result")
+                .returnUrl(frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=success")
+                .cancelUrl(frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=cancelled")
                 .build();
 
         CreatePaymentLinkResponse response = payOS.paymentRequests().create(paymentData);
