@@ -6,9 +6,11 @@ import com.capstone.paymentservice.dto.response.PaymentTransactionResponse;
 import com.capstone.paymentservice.service.PaymentService;
 import com.capstone.paymentservice.service.PaymentTransactionService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/internal")
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class InternalController {
     public ResponseEntity<BaseResponse<PaymentLinkResponse>> createPaymentLink(
             @RequestBody OrderInternalResponse request
     ) {
+        log.info("Request to create payment link: {}", request);
         return ResponseEntity.ok(BaseResponse.created("Tạo thanh toán thành công", paymentService.getPaymentLink(request)));
     }
 }
