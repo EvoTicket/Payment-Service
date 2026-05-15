@@ -67,8 +67,8 @@ public class SePayPaymentStrategy implements PaymentStrategy {
         fields.put("order_invoice_number", order.getOrderCode());
         fields.put("customer_id", order.getBuyerName());
         fields.put("success_url", frontendDomain + "/" + locale + "/user/events/" + order.getEventId() + "/payment/result?status=PAID&orderCode=" + order.getOrderCode());
-        fields.put("error_url", frontendDomain + "/" + locale + "/user/events/" + order.getEventId() + "/payment/result?status=failed&orderCode=" + order.getOrderCode());
-        fields.put("cancel_url", frontendDomain + "/" + locale + "/user/events/" + order.getEventId() + "/payment/result?status=cancelled&orderCode=" + order.getOrderCode());
+        fields.put("error_url", backendDomain + "/order-service/api/v1/orders/cancel-callback?orderCode=" + order.getOrderCode() + "&eventId=" + order.getEventId() + "&locale=" + locale);
+        fields.put("cancel_url", backendDomain + "/order-service/api/v1/orders/cancel-callback?orderCode=" + order.getOrderCode() + "&eventId=" + order.getEventId() + "&locale=" + locale);
 
         fields.put("signature", signFields(fields));
 
