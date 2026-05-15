@@ -56,6 +56,7 @@ public class SePayPaymentStrategy implements PaymentStrategy {
     @Override
     public PaymentResult createPayment(OrderInternalResponse order) {
         String description = "Ma don hang " + order.getOrderCode();
+        String locale = order.getLocale() != null ? order.getLocale() : "vi";
 
         Map<String, Object> fields = new HashMap<>();
         fields.put("merchant", sePayMerchantId);
@@ -65,9 +66,9 @@ public class SePayPaymentStrategy implements PaymentStrategy {
         fields.put("order_description", description);
         fields.put("order_invoice_number", order.getOrderCode());
         fields.put("customer_id", order.getBuyerName());
-        fields.put("success_url", frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=PAID&orderCode=" + order.getOrderCode());
-        fields.put("error_url", frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=failed");
-        fields.put("cancel_url", frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?status=cancelled");
+        fields.put("success_url", frontendDomain + "/" + locale + "/user/events/" + order.getEventId() + "/payment/result?status=PAID&orderCode=" + order.getOrderCode());
+        fields.put("error_url", frontendDomain + "/" + locale + "/user/events/" + order.getEventId() + "/payment/result?status=failed");
+        fields.put("cancel_url", frontendDomain + "/" + locale + "/user/events/" + order.getEventId() + "/payment/result?status=cancelled");
 
         fields.put("signature", signFields(fields));
 
