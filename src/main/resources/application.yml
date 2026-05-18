@@ -102,6 +102,9 @@ payos:
   client-id: ${PAYOS_CLIENT_ID}
   api-key: ${PAYOS_API_KEY}
   checksum-key: ${PAYOS_CHECKSUM_KEY}
+  payout-client-id: ${PAYOS_PAYOUT_CLIENT_ID}
+  payout-api-key: ${PAYOS_PAYOUT_API_KEY}
+  payout-checksum-key: ${PAYOS_PAYOUT_CHECKSUM_KEY}
   log-level: DEBUG
 
 sepay:

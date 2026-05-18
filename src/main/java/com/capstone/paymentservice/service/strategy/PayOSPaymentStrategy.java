@@ -37,7 +37,7 @@ public class PayOSPaymentStrategy implements PaymentStrategy {
     @Override
     public PaymentResult createPayment(OrderInternalResponse order) {
         String description = "Ma don hang " + order.getOrderCode();
-
+        String locale =  Objects.requireNonNullElse(order.getLocale(), "vi");
         List<PaymentLinkItem> items = order.getItems()
                 .stream()
                 .map(item -> PaymentLinkItem.builder()
@@ -56,8 +56,8 @@ public class PayOSPaymentStrategy implements PaymentStrategy {
                 .buyerName(order.getBuyerName())
                 .buyerEmail(order.getBuyerEmail())
                 .buyerPhone(order.getBuyerPhone())
-                .returnUrl(frontendDomain + "/" + order.getLocale() + "/user/events/" + order.getEventId() + "/payment/result?orderCode=" + order.getOrderCode())
-                .cancelUrl(backendDomain + "/order-service/api/v1/orders/cancel-callback?orderCode=" + order.getOrderCode() + "&eventId=" + order.getEventId() + "&locale=" + order.getLocale())
+                .returnUrl(frontendDomain + "/" + locale + "/user/events/" + order.getEventId() + "/payment/result?orderCode=" + order.getOrderCode())
+                .cancelUrl(backendDomain + "/order-service/api/v1/orders/cancel-callback?orderCode=" + order.getOrderCode() + "&eventId=" + order.getEventId() + "&locale=" + locale)
                 .build();
 
         CreatePaymentLinkResponse response = payOS.paymentRequests().create(paymentData);
