@@ -37,7 +37,7 @@ public class PayoutService {
         PayoutRequests payoutRequest = PayoutRequests.builder()
                 .referenceId(referenceId)
                 .amount(amount.longValue())
-                .description("Resale order " + referenceId)
+                .description("Resale EvoTicket")
                 .category(List.of("resale"))
                 .toBin(binCode)
                 .toAccountNumber(bankAccountNumber)
