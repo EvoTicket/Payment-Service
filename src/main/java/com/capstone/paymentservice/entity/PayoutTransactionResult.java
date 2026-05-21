@@ -1,7 +1,6 @@
 package com.capstone.paymentservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import vn.payos.model.v1.payouts.PayoutTransactionState;
 
@@ -12,6 +11,10 @@ import vn.payos.model.v1.payouts.PayoutTransactionState;
 @Builder
 @Entity
 public class PayoutTransactionResult {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payout_result_id")
+    private PayoutResult payoutResult;
 
     @Id
     private String id;

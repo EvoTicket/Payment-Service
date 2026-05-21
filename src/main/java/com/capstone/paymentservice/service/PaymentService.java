@@ -133,8 +133,10 @@ public class PaymentService {
                 .map(this::mapToPayoutTransactionResult)
                 .toList();
 
-        payoutTransactionResultRepository.saveAll(transactions);
-        payoutResultRepository.save(mapToPayoutResult(payout, transactions));
+        PayoutResult payoutResult = mapToPayoutResult(payout, transactions);
+        transactions.forEach(transaction -> transaction.setPayoutResult(payoutResult));
+
+        payoutResultRepository.save(payoutResult);
     }
 
     private PayoutResult mapToPayoutResult(Payout payout, List<PayoutTransactionResult> transactions) {
