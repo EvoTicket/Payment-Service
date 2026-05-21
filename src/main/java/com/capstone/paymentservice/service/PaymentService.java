@@ -3,17 +3,24 @@ package com.capstone.paymentservice.service;
 import com.capstone.paymentservice.client.OrderFeignClient;
 import com.capstone.paymentservice.client.OrderInternalResponse;
 import com.capstone.paymentservice.dto.response.PaymentLinkResponse;
+import com.capstone.paymentservice.entity.PayoutResult;
+import com.capstone.paymentservice.entity.PayoutTransactionResult;
 import com.capstone.paymentservice.enums.PaymentMethod;
 import com.capstone.paymentservice.exception.AppException;
 import com.capstone.paymentservice.exception.ErrorCode;
+import com.capstone.paymentservice.repository.PayoutResultRepository;
+import com.capstone.paymentservice.repository.PayoutTransactionResultRepository;
 import com.capstone.paymentservice.service.strategy.PaymentResult;
 import com.capstone.paymentservice.service.strategy.PaymentStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import vn.payos.PayOS;
+import vn.payos.model.v1.payouts.Payout;
+import vn.payos.model.v1.payouts.PayoutTransaction;
 
 import java.util.*;
 
@@ -25,6 +32,8 @@ public class PaymentService {
     private final PayOS payOS;
     private final WebClient sepayWebClient;
     private final PaymentTransactionService paymentTransactionService;
+    private final PayoutResultRepository payoutResultRepository;
+    private final PayoutTransactionResultRepository payoutTransactionResultRepository;
 
     @Value("${back-end.domain}")
     private String backendDomain;
@@ -40,13 +49,17 @@ public class PaymentService {
             List<PaymentStrategy> strategies,
             PayOS payOS,
             WebClient sepayWebClient,
-            PaymentTransactionService paymentTransactionService
+            PaymentTransactionService paymentTransactionService,
+            PayoutResultRepository payoutResultRepository,
+            PayoutTransactionResultRepository payoutTransactionResultRepository
     ) {
         this.orderFeignClient = orderFeignClient;
         this.sepayWebClient = sepayWebClient;
         this.paymentTransactionService = paymentTransactionService;
         this.strategyMap = new EnumMap<>(PaymentMethod.class);
         this.payOS = payOS;
+        this.payoutTransactionResultRepository = payoutTransactionResultRepository;
+        this.payoutResultRepository =  payoutResultRepository;
 
         for (PaymentStrategy strategy : strategies) {
             strategyMap.put(strategy.getPaymentMethod(), strategy);
@@ -112,5 +125,43 @@ public class PaymentService {
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
+    }
+
+    @Transactional
+    public void savePayoutResult(Payout payout) {
+        List<PayoutTransactionResult> transactions = payout.getTransactions().stream()
+                .map(this::mapToPayoutTransactionResult)
+                .toList();
+
+        payoutTransactionResultRepository.saveAll(transactions);
+        payoutResultRepository.save(mapToPayoutResult(payout, transactions));
+    }
+
+    private PayoutResult mapToPayoutResult(Payout payout, List<PayoutTransactionResult> transactions) {
+        return PayoutResult.builder()
+                .id(payout.getId())
+                .referenceId(payout.getReferenceId())
+                .approvalState(payout.getApprovalState())
+                .category(payout.getCategory())
+                .createdAt(payout.getCreatedAt())
+                .transactions(transactions)
+                .build();
+    }
+
+    private PayoutTransactionResult mapToPayoutTransactionResult(PayoutTransaction transaction) {
+        return PayoutTransactionResult.builder()
+                .id(transaction.getId())
+                .referenceId(transaction.getReferenceId())
+                .amount(transaction.getAmount())
+                .description(transaction.getDescription())
+                .toBin(transaction.getToBin())
+                .toAccountNumber(transaction.getToAccountNumber())
+                .toAccountName(transaction.getToAccountName())
+                .reference(transaction.getReference())
+                .transactionDatetime(transaction.getTransactionDatetime())
+                .errorMessage(transaction.getErrorMessage())
+                .errorCode(transaction.getErrorCode())
+                .state(transaction.getState())
+                .build();
     }
 }

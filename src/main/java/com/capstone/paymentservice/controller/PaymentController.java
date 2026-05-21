@@ -15,14 +15,11 @@ import vn.payos.model.v1.payouts.PayoutRequests;
 public class PaymentController {
 
     private final PaymentTransactionService paymentTransactionService;
-    private final PayOS payOSPayout;
 
     public PaymentController(
-            PaymentTransactionService paymentTransactionService,
-            @Qualifier("payOSPayout") PayOS payOSPayout
+            PaymentTransactionService paymentTransactionService
     ) {
         this.paymentTransactionService = paymentTransactionService;
-        this.payOSPayout = payOSPayout;
     }
 
     @GetMapping("/{orderCode}")
@@ -31,21 +28,4 @@ public class PaymentController {
     ) {
         return ResponseEntity.ok(BaseResponse.ok("Lấy trạng thái thanh toán thành công", paymentTransactionService.getTransactionByOrderCode(orderCode)));
     }
-
-    @PostMapping("/create")
-    public BaseResponse<Payout> create(@RequestBody PayoutRequests body) {
-        try {
-            if (body.getReferenceId() == null || body.getReferenceId().isEmpty()) {
-                body.setReferenceId("payout_" + (System.currentTimeMillis() / 1000));
-            }
-
-            Payout payout = payOSPayout.payouts().create(body);
-            return BaseResponse.ok("ok", payout);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return BaseResponse.badRequest("fail");
-        }
-    }
-
 }
